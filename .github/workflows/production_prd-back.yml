@@ -123,6 +123,13 @@ jobs:
         with:
           name: fastapi-app
 
+      - name: List directory structure and check for ZIP file
+        run: |
+          ls -alR  # ディレクトリの階層構造を再帰的にリスト表示
+          ls -al app/release.zip  # 指定された場所にZIPファイルが存在するか確認
+          ls -al api/release.zip  # 指定された場所にZIPファイルが存在するか確認
+        
+
       - name: Unzip Next.js deployment artifacts
         run: unzip -o app/release.zip -d nextjs_deploy
 
