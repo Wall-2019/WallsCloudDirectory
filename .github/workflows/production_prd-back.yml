@@ -85,46 +85,48 @@ jobs:
           cd app
           zip -r release.zip deploy
 
+      - name: Zip FastAPI project
+        run: |
+          cd api
+          zip -r api-release.zip .
+
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: app/release.zip
 
+      - name: Upload FastAPI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastapi-app
+          path: api/api-release.zip
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download deployment artifacts
+      - name: Download deployment artifacts (Next.js)
         uses: actions/download-artifact@v4
         with:
           name: node-app
 
-      - name: Unzip deployment artifacts
-        run: unzip release.zip
+      - name: Download deployment artifacts (FastAPI)
+        uses: actions/download-artifact@v4
+        with:
+          name: fastapi-app
+
+      - name: Unzip Next.js deployment artifacts
+        run: unzip -o app/release.zip
+
+      - name: Unzip FastAPI deployment artifacts
+        run: unzip -o api/api-release.zip
 
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set Azure Web App Name for Frontend and Backend
-        id: set-app-names
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
-          fi
-
-      - name: Wait before deploying
-        run: sleep 20s  # 20秒の遅延を追加
-      
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
@@ -133,14 +135,6 @@ jobs:
           package: deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
-      - name: Unzip release.zip
-        run: unzip -o release.zip
-      
-      - name: List contents after unzip
-        run: ls -al  # 解凍後の内容を確認
-      
       - name: Deploy FastAPI app to Azure Web App
         run: |
-          cd api
-          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10"
-                    
+          az webapp deploy --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_BACKEND_APP_NAME }} --src-path api/api-release.zip --type zip --runtime "PYTHON|3.10"
