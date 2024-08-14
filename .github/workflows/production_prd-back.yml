@@ -54,12 +54,12 @@ jobs:
 
       - name: Install dependencies (Next.js)
         run: |
-          cd WallsCloudDirectory/app
+          cd app
           npm install
 
       - name: Install dependencies (FastAPI)
         run: |
-          cd WallsCloudDirectory/api
+          cd api
           pip install -r requirements.txt
 
       - name: Build the Next.js project
