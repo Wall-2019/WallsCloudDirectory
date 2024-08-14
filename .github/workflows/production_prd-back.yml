@@ -133,7 +133,5 @@ jobs:
 
       - name: Deploy FastAPI app to Azure Web App
         run: |
-          ls -al  # 現在のディレクトリを確認
-          cd WallsCloudDirectory/api  # 実際のパスに修正
-          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10"
-        
+          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10" --src-path deploy
+                
