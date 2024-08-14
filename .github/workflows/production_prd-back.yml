@@ -103,6 +103,11 @@ jobs:
       - name: Unzip deployment artifacts
         run: unzip release.zip
 
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
