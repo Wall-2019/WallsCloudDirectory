@@ -101,14 +101,14 @@ jobs:
           name: node-app
 
       - name: Unzip deployment artifacts
-        run: unzip app/release.zip
+        run: unzip release.zip
 
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: app/deploy
+          package: deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Deploy FastAPI app to Azure Web App
