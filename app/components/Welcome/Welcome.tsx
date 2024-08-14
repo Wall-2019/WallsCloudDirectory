@@ -29,7 +29,7 @@ export function Welcome() {
         Walls Cloud Directory はインターネットを通じてデータを
         保存・アクセス・共有を行うことができるプラットフォームです。
       </Text>
-      {/* <Button onClick={test}>test</Button> */}
+      <Button onClick={test}>test</Button>
     </>
   );
 }
