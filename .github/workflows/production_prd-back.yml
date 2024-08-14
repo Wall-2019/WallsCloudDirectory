@@ -85,11 +85,28 @@ jobs:
           cd app
           zip -r release.zip deploy
 
+      - name: Prepare deployment artifacts for FastAPI
+        run: |
+          cd api
+          mkdir -p ../deploy_fastapi
+          cp -r . ../deploy_fastapi
+
+      - name: Zip FastAPI artifacts
+        run: |
+          cd ..
+          zip -r deploy_fastapi.zip deploy_fastapi
+
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: app/release.zip
+
+      - name: Upload FastAPI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastapi-app
+          path: deploy_fastapi.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -100,10 +117,17 @@ jobs:
         with:
           name: node-app
 
-      - name: Unzip deployment artifacts
-        run: |
-          unzip release.zip
+      - name: Download FastAPI artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: fastapi-app
 
+      - name: Unzip deployment artifacts
+        run: unzip -o release.zip -d nextjs_deploy
+
+      - name: Unzip FastAPI artifacts
+        run: unzip -o deploy_fastapi.zip -d fastapi_deploy
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -123,15 +147,21 @@ jobs:
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
+      - name: Wait before deploying
+        run: sleep 20s  # 20秒の遅延を追加
+      
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: deploy
+          package: nextjs_deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Deploy FastAPI app to Azure Web App
-        run: |
-          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10" --src-path deploy
-                
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
+          slot-name: 'Production'
+          package: fastapi_deploy
+          publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
