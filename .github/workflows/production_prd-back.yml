@@ -134,8 +134,7 @@ jobs:
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Unzip release.zip
-        run: |
-          unzip release.zip
+        run: unzip -o release.zip
       
       - name: List contents after unzip
         run: ls -al  # 解凍後の内容を確認
