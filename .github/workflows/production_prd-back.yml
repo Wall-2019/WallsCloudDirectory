@@ -110,5 +110,3 @@ jobs:
         if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/development'
         run: |
           az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }} --sku F1 --runtime "PYTHON|3.10" --src-path WallsCloudDirectory/api
-        with:
-          publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
