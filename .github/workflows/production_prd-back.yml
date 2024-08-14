@@ -1,13 +1,11 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
-name: Build and deploy Python app to Azure Web App - prd-back
+name: Build and deploy Next.js or FastAPI app to Azure Web App
 
 on:
   push:
     branches:
       - production
+      - staging
+      - development
   workflow_dispatch:
 
 jobs:
@@ -17,53 +15,100 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine environment
+        id: env-setup
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
+            echo "env=production" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
+            echo "env=staging" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            echo "env=development" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          fi
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+
+      - name: Set up Node.js version
+        if: contains(github.ref, '/WallsCloudDirectory/app')
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
       - name: Set up Python version
-        uses: actions/setup-python@v5
+        if: contains(github.ref, '/WallsCloudDirectory/api')
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Create and start virtual environment
+      - name: Install dependencies (Next.js)
+        if: contains(github.ref, '/WallsCloudDirectory/app')
         run: |
-          python -m venv venv
-          source venv/bin/activate
-      
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+          cd WallsCloudDirectory/app
+          npm install
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Install dependencies (FastAPI)
+        if: contains(github.ref, '/WallsCloudDirectory/api')
+        run: |
+          cd WallsCloudDirectory/api
+          pip install -r requirements.txt
 
-      - name: Upload artifact for deployment jobs
+      - name: Build the Next.js project
+        if: contains(github.ref, '/WallsCloudDirectory/app')
+        run: |
+          cd WallsCloudDirectory/app
+          npm run build
+        env:
+          NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
+          NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
+
+      - name: Prepare deployment artifacts (Next.js)
+        if: contains(github.ref, '/WallsCloudDirectory/app')
+        run: |
+          cd WallsCloudDirectory/app
+          mkdir -p deploy
+          cp -r ./.next/standalone/. ./deploy
+          cp -r ./public ./deploy
+          cp -r ./.next/static ./deploy/.next/static
+          cp ./package.json ./deploy
+          cp ./package-lock.json ./deploy
+
+      - name: Zip deployment artifacts (Next.js)
+        if: contains(github.ref, '/WallsCloudDirectory/app')
+        run: zip -r release.zip deploy
+
+      - name: Upload deployment artifacts (Next.js)
+        if: contains(github.ref, '/WallsCloudDirectory/app')
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
-          path: |
-            release.zip
-            !venv/
+          name: node-app
+          path: release.zip
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: python-app
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-
-      
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App (Next.js)
+        if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/development'
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
-          app-name: 'prd-back'
+          app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_058C837739B14AD2BC709063A088B34E }}
+          package: deploy
+          publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
+
+      - name: Deploy FastAPI app to Azure Web App
+        if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/development'
+        run: |
+          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }} --sku F1 --runtime "PYTHON|3.10" --src-path WallsCloudDirectory/api
+        with:
+          publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
