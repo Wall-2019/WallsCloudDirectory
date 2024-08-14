@@ -117,10 +117,12 @@ jobs:
           name: fastapi-app
 
       - name: Unzip Next.js deployment artifacts
-        run: unzip -o app/release.zip
+        run: |
+          unzip -o app/release.zip -d app
 
       - name: Unzip FastAPI deployment artifacts
-        run: unzip -o api/api-release.zip
+        run: |
+          unzip -o api/api-release.zip -d api
 
       - name: Azure Login
         uses: azure/login@v1
@@ -132,7 +134,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: deploy
+          package: app/deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Deploy FastAPI app to Azure Web App
