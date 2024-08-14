@@ -89,13 +89,14 @@ jobs:
         run: |
           cd api
           mkdir -p deploy
-          cp -r . ./deploy
-
+          shopt -s extglob
+          cp -r !(deploy|.git|__pycache__) deploy/
+        
       - name: Zip FastAPI artifacts
         run: |
           cd api
           zip -r release.zip deploy
-
+        
       - name: Upload Next.js deployment artifacts
         uses: actions/upload-artifact@v4
         with:
