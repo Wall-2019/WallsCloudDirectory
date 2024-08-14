@@ -130,9 +130,15 @@ jobs:
           package: deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
+      - name: Unzip release.zip
+        run: |
+          unzip release.zip
+      
+      - name: List contents after unzip
+        run: ls -al  # 解凍後の内容を確認
+      
       - name: Deploy FastAPI app to Azure Web App
         run: |
-          ls -al  # 現在のディレクトリの内容をリスト表示して確認
-          cd WallsCloudDirectory/api
+          cd api
           az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10"
-            
+                    
