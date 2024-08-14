@@ -64,7 +64,7 @@ jobs:
 
       - name: Build the Next.js project
         run: |
-          cd WallsCloudDirectory/app
+          cd app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Prepare deployment artifacts (Next.js)
         run: |
-          cd WallsCloudDirectory/app
+          cd app
           mkdir -p deploy
           cp -r ./.next/standalone/. ./deploy
           cp -r ./public ./deploy
@@ -82,14 +82,14 @@ jobs:
 
       - name: Zip deployment artifacts (Next.js)
         run: |
-          cd WallsCloudDirectory/app
+          cd app
           zip -r release.zip deploy
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: WallsCloudDirectory/app/release.zip
+          path: app/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -101,16 +101,16 @@ jobs:
           name: node-app
 
       - name: Unzip deployment artifacts
-        run: unzip WallsCloudDirectory/app/release.zip
+        run: unzip app/release.zip
 
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: WallsCloudDirectory/app/deploy
+          package: app/deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Deploy FastAPI app to Azure Web App
         run: |
-          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }} --sku F1 --runtime "PYTHON|3.10" --src-path WallsCloudDirectory/api
+          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }} --sku F1 --runtime "PYTHON|3.10" --src-path api
