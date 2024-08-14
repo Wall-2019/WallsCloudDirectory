@@ -21,7 +21,7 @@ jobs:
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "env=production" >> $GITHUB_ENV
             echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=prd-front" >> $GITHUB_ENV
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
