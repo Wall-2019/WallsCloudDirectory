@@ -122,6 +122,9 @@ jobs:
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
+      - name: Wait before deploying
+        run: sleep 20s  # 20秒の遅延を追加
+      
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
