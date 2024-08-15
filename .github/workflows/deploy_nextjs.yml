@@ -1,0 +1,88 @@
+name: Deploy Next.js to Azure Web App
+
+on:
+  push:
+    branches:
+      - production
+      - staging
+      - development
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables based on branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm install
+
+      - name: Build the Next.js project
+        run: |
+          cd app
+          npm run build
+        env:
+          NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
+
+      - name: Prepare deployment artifacts
+        run: |
+          cd app
+          mkdir -p deploy
+          cp -r ./.next/standalone/. ./deploy
+          cp -r ./public ./deploy
+          cp -r ./.next/static ./deploy/.next/static
+          cp ./package.json ./deploy
+          cp ./package-lock.json ./deploy
+          zip -r release.zip deploy
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-app
+          path: app/release.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download deployment artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nextjs-app
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Next.js to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
+          slot-name: 'Production'
+          package: app/release.zip
+          publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
