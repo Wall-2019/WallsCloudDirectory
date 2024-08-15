@@ -96,10 +96,13 @@ jobs:
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
   
+      - name: Change Directory to app
+        run: cd app
+  
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: app/release.zip
+          package: release.zip
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
