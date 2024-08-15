@@ -41,10 +41,10 @@ jobs:
       - name: Prepare deployment artifacts
         run: |
           cd api
-          mkdir -p fastapi_deploy  # ディレクトリ名を変更
-          cp -r ./* ./fastapi_deploy
-          zip -r fastapi_release.zip fastapi_deploy  # ZIPファイル名を変更
-
+          mkdir -p fastapi_deploy
+          cp -r !(fastapi_deploy) ./fastapi_deploy 
+          zip -r fastapi_release.zip fastapi_deploy
+  
       - name: List contents
         run: ls -al api
 
