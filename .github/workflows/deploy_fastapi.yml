@@ -42,10 +42,9 @@ jobs:
         run: |
           cd api
           mkdir -p fastapi_deploy  # ディレクトリ名を変更
-          shopt -s extglob
-          cp -r !(fastapi_deploy) ./fastapi_deploy  # 'fastapi_deploy' ディレクトリ自体を除外してコピー
+          cp -r ./* ./fastapi_deploy
           zip -r fastapi_release.zip fastapi_deploy  # ZIPファイル名を変更
-  
+
       - name: List contents
         run: ls -al api
 
@@ -76,13 +75,10 @@ jobs:
         id: set-app-names
         run: |
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
   
@@ -91,5 +87,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
           slot-name: 'Production'
-          package: fastapi_release.zip  # ZIPファイル名を変更
+          package: api/fastapi_release.zip  # ZIPファイル名を変更
           publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
