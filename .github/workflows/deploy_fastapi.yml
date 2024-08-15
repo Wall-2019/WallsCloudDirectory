@@ -65,6 +65,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Set Azure Web App Name for Frontend and Backend
+        id: set-app-names
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
+          fi
+  
       - name: Deploy FastAPI to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
