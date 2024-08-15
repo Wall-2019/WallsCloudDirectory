@@ -42,7 +42,8 @@ jobs:
         run: |
           cd api
           mkdir -p fastapi_deploy
-          cp -r !(fastapi_deploy) ./fastapi_deploy 
+          shopt -s extglob
+          cp -r !("fastapi_deploy") ./fastapi_deploy
           zip -r fastapi_release.zip fastapi_deploy
   
       - name: List contents
