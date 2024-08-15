@@ -45,10 +45,10 @@ jobs:
           shopt -s extglob
           cp -r !("fastapi_deploy") ./fastapi_deploy
           zip -r fastapi_release.zip fastapi_deploy
-  
-      - name: List contents
-        run: ls -al api
 
+      - name: List contents after zipping
+        run: ls -al api
+  
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -88,5 +88,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
           slot-name: 'Production'
-          package: api/fastapi_release.zip  # ZIPファイル名を変更
+          package: api/fastapi_release.zip  # 正しいパスを指定
           publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
