@@ -77,6 +77,9 @@ jobs:
         with:
           name: nextjs-app
 
+      - name: List current directory contents
+        run: ls -al
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
