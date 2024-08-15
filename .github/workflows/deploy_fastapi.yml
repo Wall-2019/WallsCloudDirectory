@@ -42,9 +42,10 @@ jobs:
         run: |
           cd api
           mkdir -p fastapi_deploy  # ディレクトリ名を変更
-          cp -r . ./fastapi_deploy
+          shopt -s extglob
+          cp -r !(fastapi_deploy) ./fastapi_deploy  # 'fastapi_deploy' ディレクトリ自体を除外してコピー
           zip -r fastapi_release.zip fastapi_deploy  # ZIPファイル名を変更
-
+  
       - name: List contents
         run: ls -al api
 
