@@ -41,18 +41,18 @@ jobs:
       - name: Prepare deployment artifacts
         run: |
           cd api
-          mkdir -p deploy
-          cp -r . ./deploy
-          zip -r release.zip deploy
+          mkdir -p fastapi_deploy  # ディレクトリ名を変更
+          cp -r . ./fastapi_deploy
+          zip -r fastapi_release.zip fastapi_deploy  # ZIPファイル名を変更
 
       - name: List contents
-        run: ls -al app
+        run: ls -al api
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fastapi-app
-          path: api/release.zip
+          path: api/fastapi_release.zip  # ZIPファイル名を変更
 
   deploy:
     runs-on: ubuntu-latest
@@ -63,6 +63,9 @@ jobs:
         with:
           name: fastapi-app
 
+      - name: List current directory contents
+        run: ls -al
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -87,5 +90,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
           slot-name: 'Production'
-          package: api/release.zip
+          package: fastapi_release.zip  # ZIPファイル名を変更
           publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}

@@ -51,13 +51,13 @@ jobs:
       - name: Prepare deployment artifacts
         run: |
           cd app
-          mkdir -p deploy
-          cp -r ./.next/standalone/. ./deploy
-          cp -r ./public ./deploy
-          cp -r ./.next/static ./deploy/.next/static
-          cp ./package.json ./deploy
-          cp ./package-lock.json ./deploy
-          zip -r release.zip deploy
+          mkdir -p next_deploy  # ディレクトリ名を変更
+          cp -r ./.next/standalone/. ./next_deploy
+          cp -r ./public ./next_deploy
+          cp -r ./.next/static ./next_deploy/.next/static
+          cp ./package.json ./next_deploy
+          cp ./package-lock.json ./next_deploy
+          zip -r next_release.zip next_deploy  # ZIPファイル名を変更
 
       - name: List contents
         run: ls -al app
@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-app
-          path: app/release.zip
+          path: app/next_release.zip  # ZIPファイル名を変更
 
   deploy:
     runs-on: ubuntu-latest
@@ -98,12 +98,11 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
-  
+
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: release.zip
+          package: next_release.zip  # ZIPファイル名を変更
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
-        
