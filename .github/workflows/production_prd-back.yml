@@ -134,6 +134,9 @@ jobs:
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
+      - name: Wait before deploying
+        run: sleep 20s  # デプロイ前に遅延を追加
+      
       - name: Deploy to Azure Web App (Next.js)
         uses: azure/webapps-deploy@v3
         with:
@@ -141,7 +144,7 @@ jobs:
           slot-name: 'Production'
           package: deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
-
+        
       # - name: Deploy FastAPI app to Azure Web App
       #   run: |
       #     cd api
