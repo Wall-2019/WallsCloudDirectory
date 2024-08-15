@@ -114,7 +114,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: fastapi-app
-          
+
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -142,7 +142,7 @@ jobs:
           package: deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
-      - name: Deploy FastAPI app to Azure Web App
-        run: |
-          cd api
-          az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10"
+      # - name: Deploy FastAPI app to Azure Web App
+      #   run: |
+      #     cd api
+      #     az webapp up --name ${{ env.AZURE_BACKEND_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --location japaneast --sku F1 --runtime "PYTHON|3.10"
