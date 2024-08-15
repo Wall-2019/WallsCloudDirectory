@@ -88,5 +88,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
           slot-name: 'Production'
-          package: api/fastapi_release.zip  # 正しいパスを指定
+          package: fastapi_release.zip  # ここで正しいパスを指定
           publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
