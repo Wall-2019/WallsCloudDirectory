@@ -69,6 +69,7 @@ jobs:
 
       - name: Prepare deployment artifacts
         run: |
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
           mkdir -p next_deploy
           cp -r ./.next/standalone/. ./next_deploy
           cp -r ./public ./next_deploy
