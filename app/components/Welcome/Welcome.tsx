@@ -6,6 +6,8 @@ export function Welcome() {
 
   const test = () => {
     console.log("Backend URL:", process.env.NEXT_PUBLIC_NEXTAUTH_SECRET);
+    console.log("Backend URL:", process.env.NEXT_PUBLIC_URL);
+
   }
 
   return (
