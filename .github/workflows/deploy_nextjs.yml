@@ -54,7 +54,10 @@ jobs:
         run: |
           cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
           zip -r app_release.zip app
-
+      
+      - name: List contents of ZIP file
+        run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
+        
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
 
