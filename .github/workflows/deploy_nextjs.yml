@@ -43,6 +43,12 @@ jobs:
           cd app
           npm install
 
+      - name: Print current directory
+        run: pwd
+
+      - name: List current directory contents
+        run: ls -al
+
       - name: Build the Next.js project
         run: |
           npm run build
