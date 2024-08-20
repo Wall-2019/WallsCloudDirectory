@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
       - name: Set environment variables based on branch
         run: |
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
@@ -32,24 +37,14 @@ jobs:
           fi
           echo "NEXT_PUBLIC_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
 
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-
       - name: Install dependencies
         run: |
           cd app
           npm install
-
-      - name: Change to app directory
-        run: cd app
         
       - name: Print working directory
         run: pwd
         
-
       - name: List current directory contents
         run: ls -al
 
@@ -85,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-app
-          path: app/next_release.zip
+          path: next_release.zip
 
   deploy:
     runs-on: ubuntu-latest
