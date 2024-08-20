@@ -22,7 +22,7 @@ def add_azure_share_client(azure_share_client_name: str):
         share_client = service_client.get_share_client(azure_share_client_name)
         share_client.create_share()
     except ResourceExistsError:
-        print("Share client already exists")  # デバッグログ
+        print("Share client already exists")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -52,7 +52,6 @@ def get_azure_directory_client(directory_path: str, azure_share_client_name: str
         service_client = ShareServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
         share_client = service_client.get_share_client(azure_share_client_name)
         directory_client = share_client.get_directory_client(directory_path)
-        print(f"Directory client URL: {directory_client.url}")  # デバッグログ
         return directory_client
     except Exception as e:
         raise HTTPException(
@@ -79,12 +78,8 @@ def download_file_from_azure_to_stream(storage_name: str, directory_path: str, f
     # ファイルをダウンロードして一時ファイルに書き込む
     with open(temp_file.name, 'wb') as file_handle:
         downloader = file_client.download_file()
-        downloader.readinto(file_handle)
-    
+        downloader.readinto(file_handle)   
     return temp_file.name
-    
-    # stream = file_client.download_file()
-    # return stream.chunks()
 
 # Azure Storageのフォルダを作成
 def create_azure_folder(directory_name: str, parent_path: str, storage_name: str) -> str:    
@@ -152,14 +147,9 @@ def check_azure_folder_exists(directory_path: str) -> bool:
 # Azure Storageのファイルをリネーム
 def rename_azure_folder(old_directory_path: str, new_directory_path: str, storage_name: str):
     if not old_directory_path or not new_directory_path:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Both old and new directory paths are required")
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Both old and new directory paths are required") 
     old_directory_client = get_azure_directory_client(old_directory_path, storage_name)
     new_directory_client = get_azure_directory_client(new_directory_path, storage_name)
-
-    # デバッグ用ログ
-    print(f"Old directory URL: {old_directory_client.url}")
-    print(f"New directory URL: {new_directory_client.url}")
     
     try:
         # 新しいディレクトリが存在しない場合のみ作成
