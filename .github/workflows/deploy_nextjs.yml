@@ -71,16 +71,16 @@ jobs:
           cp -r ./.next/static ./next_deploy/.next/static
           cp ./package.json ./next_deploy
           cp ./package-lock.json ./next_deploy
-          zip -r next_release.zip next_deploy
+          zip -r ../next_release.zip next_deploy
 
       - name: List contents
-        run: ls -al app
+        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-app
-          path: next_release.zip
+          path: /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/next_release.zip
 
   deploy:
     runs-on: ubuntu-latest
