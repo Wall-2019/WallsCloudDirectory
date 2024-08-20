@@ -42,36 +42,18 @@ jobs:
           cd app
           npm install
         
-      - name: Print working directory
-        run: pwd
-        
-      - name: List current directory contents
-        run: ls -al
-
       - name: Build the Next.js project
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
+          cd app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
 
-      - name: Print current directory
-        run: pwd
-
-      - name: List current directory contents
-        run: ls -al
-
       - name: Prepare deployment artifacts
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
-          mkdir -p next_deploy
-          cp -r ./.next/standalone/. ./next_deploy
-          cp -r ./public ./next_deploy
-          cp -r ./.next/static ./next_deploy/.next/static
-          cp ./package.json ./next_deploy
-          cp ./package-lock.json ./next_deploy
-          zip -r ../next_release.zip next_deploy
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
+          zip -r next_release.zip app
 
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
