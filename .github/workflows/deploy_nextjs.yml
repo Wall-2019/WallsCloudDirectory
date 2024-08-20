@@ -44,14 +44,16 @@ jobs:
           npm install
 
       - name: Print current directory
-        run: pwd
+        run:
+          cd app
+          pwd
 
       - name: List current directory contents
         run: ls -al
 
       - name: Build the Next.js project
         run: |
-          cd app
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
