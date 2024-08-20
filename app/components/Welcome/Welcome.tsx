@@ -5,7 +5,7 @@ import Link from "next/link";
 export function Welcome() {
 
   const test = () => {
-    console.log("Backend URL:", process.env.NEXT_PUBLIC_URL);
+    console.log("Backend URL:", process.env.NEXTAUTH_SECRET);
   }
 
   return (
