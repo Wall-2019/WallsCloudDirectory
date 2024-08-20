@@ -43,10 +43,12 @@ jobs:
           cd app
           npm install
 
-      - name: Print current directory
-        run:
-          cd app
-          pwd
+      - name: Change to app directory
+        run: cd app
+        
+      - name: Print working directory
+        run: pwd
+        
 
       - name: List current directory contents
         run: ls -al
