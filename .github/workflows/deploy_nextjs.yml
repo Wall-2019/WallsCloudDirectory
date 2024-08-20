@@ -51,14 +51,20 @@ jobs:
 
       - name: Build the Next.js project
         run: |
+          cd app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
 
+      - name: Print current directory
+        run: pwd
+
+      - name: List current directory contents
+        run: ls -al
+
       - name: Prepare deployment artifacts
         run: |
-          cd app
           mkdir -p next_deploy
           cp -r ./.next/standalone/. ./next_deploy
           cp -r ./public ./next_deploy
