@@ -39,12 +39,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd app
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
           npm install
         
       - name: Build the Next.js project
         run: |
-          cd app
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
@@ -52,14 +52,8 @@ jobs:
 
       - name: Prepare deployment artifacts
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
-          ls -al
-
-      - name: Print working directory
-        run: pwd
-        
-      - name: List current directory contents
-        run: ls -al
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
+          zip -r app_release.zip app
 
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
@@ -68,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-app
-          path: /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/next_release.zip
+          path: /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -103,5 +97,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: next_release.zip 
+          package: app_release.zip 
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
