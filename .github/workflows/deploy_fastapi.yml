@@ -68,5 +68,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_BACKEND_APP_NAME }}
           slot-name: 'Production'
-          package: ./api  # APIフォルダ全体をデプロイ
+          package: ./api
           publish-profile: ${{ env.AZURE_BACKEND_PUBLISH_PROFILE }}
