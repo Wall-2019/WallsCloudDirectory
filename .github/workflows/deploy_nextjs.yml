@@ -52,8 +52,14 @@ jobs:
 
       - name: Prepare deployment artifacts
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
-          zip -r next_release.zip app
+          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
+          ls -al
+
+      - name: Print working directory
+        run: pwd
+        
+      - name: List current directory contents
+        run: ls -al
 
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
