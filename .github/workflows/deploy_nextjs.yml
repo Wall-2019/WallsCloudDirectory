@@ -95,6 +95,9 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
+      - name: Wait before deploying
+        run: sleep 10s
+
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
