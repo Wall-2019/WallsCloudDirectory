@@ -39,12 +39,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
+          cd app
           npm install
         
       - name: Build the Next.js project
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
+          cd app
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
@@ -52,12 +52,9 @@ jobs:
 
       - name: Prepare deployment artifacts
         run: |
-          cd /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
-          zip -r app_release.zip app
-      
-      - name: List contents of ZIP file
-        run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
-        
+          cd app
+          zip -r ../app_release.zip ./*
+
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
 
@@ -84,7 +81,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set Azure Web App Name for Frontend and Backend
+      - name: Set Azure Web App Name
         id: set-app-names
         run: |
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
@@ -94,9 +91,6 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
-
-      - name: Wait before deploying
-        run: sleep 10s
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
