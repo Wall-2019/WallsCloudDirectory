@@ -17,7 +17,7 @@ jobs:
 
       - name: Set environment variables based on branch
         run: |
-          echo "NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
