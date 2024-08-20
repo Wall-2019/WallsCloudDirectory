@@ -56,6 +56,9 @@ jobs:
           zip -r ../app_release.zip ./*
 
       - name: List contents
+        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
+  
+      - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
 
       - name: Upload deployment artifacts
