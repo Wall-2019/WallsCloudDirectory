@@ -11,7 +11,6 @@ load_dotenv()
 
 # Azureポータルから取得した接続文字列
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('connection_string')
-AZURE_SHARE_CLIENT_NAME = os.getenv('share_client_name')
 
 if AZURE_STORAGE_CONNECTION_STRING is None:
     raise ValueError("AZURE_STORAGE_CONNECTION_STRING is not set. Please check your .env file.")
