@@ -47,7 +47,6 @@ jobs:
         
       - name: Build the Next.js project
         run: |
-          cd app
           pwd
           npm run build
           ls
