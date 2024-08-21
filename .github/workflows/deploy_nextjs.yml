@@ -71,6 +71,8 @@ jobs:
         run: |
           pwd
           ls -al
+          cd app
+          ls -al
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
