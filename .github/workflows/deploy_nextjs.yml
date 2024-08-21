@@ -80,5 +80,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: ./app 
+          package: app 
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
