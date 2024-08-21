@@ -48,18 +48,15 @@ jobs:
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
-          NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
+          NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
 
-      - name: List contents
-        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
-  
       - name: Prepare deployment artifacts
         run: |
           cd app
-          zip -r ../app_release.zip . .[!.]* .[^.]* *
-        
-      - name: Verify ZIP content
-        run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
+          zip -r ../app_release.zip ./*
+
+      - name: List contents
+        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app
   
       - name: List contents
         run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
