@@ -49,11 +49,17 @@ jobs:
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
-
+  
       - name: Prepare deployment artifacts
         run: |
           cd app
           zip -r ../app_release.zip . .[!.]*
+
+      - name: Verify ZIP content
+        run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
+  
+      - name: List contents
+        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
@@ -70,6 +76,9 @@ jobs:
         with:
           name: nextjs-app
 
+      - name: List current directory contents
+        run: ls -al
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
