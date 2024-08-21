@@ -70,12 +70,6 @@ jobs:
         with:
           name: nextjs-app
 
-      - name: List current directory contents
-        run: ls -al
-
-      - name: Wait before deploying
-        run: sleep 30s
-        
       - name: Azure Login
         uses: azure/login@v1
         with:
