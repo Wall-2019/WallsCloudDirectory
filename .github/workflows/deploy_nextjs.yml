@@ -53,8 +53,8 @@ jobs:
       - name: Prepare deployment artifacts
         run: |
           cd app
-          zip -r ../app_release.zip . .[!.]*
-
+          zip -r ../app_release.zip . .[!.]* .[^.]* *
+        
       - name: Verify ZIP content
         run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
   
