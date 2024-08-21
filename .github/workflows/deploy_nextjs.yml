@@ -40,16 +40,12 @@ jobs:
       - name: Install dependencies
         run: |
           cd app
-          ls
+          ls -al
           pwd
           npm install
-          ls
-        
-      - name: Build the Next.js project
-        run: |
-          pwd
+          npm audit fix
           npm run build
-          ls
+          ls -al
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
