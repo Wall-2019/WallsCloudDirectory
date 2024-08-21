@@ -49,6 +49,9 @@ jobs:
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
+
+      - name: List contents
+        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
   
       - name: Prepare deployment artifacts
         run: |
