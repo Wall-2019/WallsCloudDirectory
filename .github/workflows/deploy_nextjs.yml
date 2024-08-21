@@ -48,7 +48,7 @@ jobs:
           npm run build
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
-          NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}
+          NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
 
       - name: Prepare deployment artifacts
         run: |
@@ -72,7 +72,10 @@ jobs:
 
       - name: List current directory contents
         run: ls -al
-      
+
+      - name: Wait before deploying
+        run: sleep 30s
+        
       - name: Azure Login
         uses: azure/login@v1
         with:
