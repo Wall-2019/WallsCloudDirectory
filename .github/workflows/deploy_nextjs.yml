@@ -55,12 +55,6 @@ jobs:
           cd app
           zip -r ../app_release.zip . .[!.]*
 
-      - name: Verify ZIP content
-        run: unzip -l /home/runner/work/WallsCloudDirectory/WallsCloudDirectory/app_release.zip
-  
-      - name: List contents
-        run: ls -al /home/runner/work/WallsCloudDirectory/WallsCloudDirectory
-
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
