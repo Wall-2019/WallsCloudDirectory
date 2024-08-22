@@ -42,7 +42,7 @@ jobs:
           cd app
           ls -al
           pwd
-          npm install
+          npm install --force
           npm run build
           ls -al
           zip -qr next.zip .next public package.json package-lock.json server.js
