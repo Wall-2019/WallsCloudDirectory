@@ -73,9 +73,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node-app
-      - run :
-          ls -al
-          pwd
+      - run : ls -al
+      - run : pwd
 
       - name: Set Azure Web App Name
         id: set-app-names
