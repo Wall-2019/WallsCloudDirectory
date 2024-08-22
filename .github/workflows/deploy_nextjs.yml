@@ -93,7 +93,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
-          package: app/next.zip
+          package: next.zip
 
       - name: Delete zip file
-        run: rm app/next.zip
+        run: rm next.zip
