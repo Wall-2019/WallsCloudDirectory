@@ -40,33 +40,25 @@ jobs:
       - name: Install dependencies
         run: |
           cd app
+          ls -al
+          pwd
           npm install
           npm audit fix
           npm run build
+          ls -al
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
-
-      - name: Prepare deployment artifacts
-        run: |
-          cd app
-          zip -r ../app_release.zip ./* ./.next ./node_modules
-
-      - name: Upload deployment artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: nextjs-app
-          path: app_release.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download deployment artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-app
+      - uses: actions/checkout@v4
 
+      - name: List current directory contents
+        run: ls -al
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -75,6 +67,10 @@ jobs:
       - name: Set Azure Web App Name
         id: set-app-names
         run: |
+          pwd
+          ls -al
+          cd app
+          ls -al
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
@@ -88,5 +84,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: app_release.zip 
+          package: app/
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
