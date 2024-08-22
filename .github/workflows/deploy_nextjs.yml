@@ -45,7 +45,7 @@ jobs:
           npm install
           npm run build
           ls -al
-          zip next.zip .next -qr
+          zip -qr next.zip .next public package.json package-lock.json
           ls -al
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
