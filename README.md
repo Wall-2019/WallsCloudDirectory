@@ -1,29 +1,20 @@
+# Overview
+Sample program to build MySQL and Fast API environment with DockerCompose
+
 #　Git Alias
 git config --global alias.co checkout
 git config --global alias.br branch
 git config --global alias.cm commit
 git config --global alias.st status
 
-# Overview
-Sample program to build MySQL and Fast API environment with DockerCompose
-
-# Install
+# Docker setup
 Create and Running
 ```
 $ docker-compose up -d --build
-
-# Debug Mode 
-$ docker-compose -f debug-docker-compose.yml up --build -d
 ```
 
-# Demo
 ## Document of API
 http://localhost:8000/docs
-
-#Debug Mode
-http://localhost:8080/docs
-You can try GET, POST, PUT
-
 
 # Show Database
 $ docker exec -it db bash
