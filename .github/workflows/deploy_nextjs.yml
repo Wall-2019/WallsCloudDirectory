@@ -75,6 +75,7 @@ jobs:
           name: node-app
       - run :
           ls -al
+          pwd
 
       - name: Set Azure Web App Name
         id: set-app-names
