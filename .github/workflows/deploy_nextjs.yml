@@ -37,6 +37,7 @@ jobs:
           npm install --force
           npm run build
           rm -rf ./.next/cache
+          rm -rf ./node_modules
           zip release.zip ./* .next -qr
           unzip -l release.zip
 
