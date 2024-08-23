@@ -36,8 +36,8 @@ jobs:
           ls -al
           npm install --force
           npm run build
+          npm prune --production
           rm -rf ./.next/cache
-          rm -rf ./node_modules
           zip release.zip ./* .next -qr
           unzip -l release.zip
 
@@ -73,6 +73,12 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
+
+      - name: Install dependencies
+        run: |
+          ls -al
+          pwd
+  
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
