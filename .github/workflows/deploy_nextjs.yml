@@ -20,23 +20,6 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Set environment variables based on branch
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
-            echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
-            echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
-            echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
-          fi
-          echo "NEXT_PUBLIC_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: |
           cd app
@@ -46,9 +29,6 @@ jobs:
           rm -rf ./.next/cache
           zip release.zip ./* .next -qr
           unzip -l release.zip
-        env:
-          NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
-          NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -73,16 +53,28 @@ jobs:
         with:
           name: node-app
 
-      - name: Set Azure Web App Name
-        id: set-app-names
+      - name: Set environment variables based on branch
         run: |
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-          fi  
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          fi
+          echo "NEXT_PUBLIC_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+
+      - name: Set environment variables based on branch
+        run:
+        env:
+          NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
+          NEXT_PUBLIC_AUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
