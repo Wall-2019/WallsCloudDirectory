@@ -43,14 +43,9 @@ jobs:
           ls -al
           npm install --force
           npm run build
-          ls -al
-          mkdir deploy
-          cp -r ./.next ./deploy
-          cp -r ./public ./deploy
-          cp -r ./package.json ./deploy
-          cp -r ./package-lock.json ./deploy
-          cp -r ./server.js ./deploy
-          zip release.zip ./deploy -qr 
+          rm -rf ./.next/cache
+          zip release.zip ./* .next -qr
+          unzip -l release.zip
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
@@ -73,12 +68,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
       - name: Set Azure Web App Name
         id: set-app-names
         run: |
-          npm cache clean --force
-
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
@@ -87,23 +84,11 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi  
 
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-
-      - name: Unzip artifact for deployment
-        run: 
-          ls
-          unzip release.zip
-          ls
-
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
-          slot-name: 'Production'
-          package: deploy 
+          package: release.zip 
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Delete zip file
