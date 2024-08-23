@@ -41,12 +41,16 @@ jobs:
         run: |
           cd app
           ls -al
-          pwd
           npm install --force
           npm run build
           ls -al
-          zip -qr next.zip .next public package.json package-lock.json server.js
-          ls -al
+          mkdir deploy
+          cp -r ./.next ./deploy
+          cp -r ./public ./deploy
+          cp -r ./package.json ./deploy
+          cp -r ./package-lock.json ./deploy
+          cp -r ./server.js ./deploy
+          zip release.zip ./deploy -qr 
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_NEXTAUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
@@ -55,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: app/next.zip
+          path: app/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -81,31 +85,25 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-          fi
-
-      - name: Clean up existing files on Azure Web App
-        run: |
-          az webapp deployment source config-zip --resource-group <YourResourceGroupName> --name ${{ env.AZURE_FRONTEND_APP_NAME }} --src /dev/null
-  
+          fi  
 
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          
-      - name: List current directory contents
-        run: ls -al
 
-      - name: Wait before deployment
-        run: sleep 10s
+      - name: Unzip artifact for deployment
+        run: 
+          unzip app/release.zip
+          ls
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
-          package: next.zip 
+          package: app/deploy 
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Delete zip file
-        run: rm next.zip
+        run: rm app/release.zip
