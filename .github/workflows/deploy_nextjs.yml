@@ -94,7 +94,9 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: 
-          unzip app/release.zip
+          cd app
+          ls
+          unzip release.zip
           ls
 
       - name: Deploy Next.js to Azure Web App
