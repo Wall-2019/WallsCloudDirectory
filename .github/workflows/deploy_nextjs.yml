@@ -74,10 +74,9 @@ jobs:
         with:
           name: node-app
           
-      - name: List
-        run: 
-          ls -al
-
+      - name: List current directory contents
+        run: ls -al
+      
       - name: Set Azure Web App Name
         id: set-app-names
         run: |
@@ -90,15 +89,17 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
-  
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+
+      - name: Wait before deployment
+        run: sleep 10s
+
+      - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
           slot-name: 'Production'
+          package: next.zip 
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
-          package: next.zip
 
       - name: Delete zip file
         run: rm next.zip
