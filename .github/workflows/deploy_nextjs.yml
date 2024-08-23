@@ -20,6 +20,16 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Set environment variables based on branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+          fi
+
       - name: Install dependencies
         run: |
           cd app
@@ -58,15 +68,12 @@ jobs:
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.PROD_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
             echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.STAGING_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
-            echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           fi
           echo "NEXT_PUBLIC_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
 
