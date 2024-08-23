@@ -69,10 +69,10 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
-      - name: Clean up files on the server
+      - name: Clean up files on the server using Kudu API
         run: |
-          az webapp config appsettings set --name ${{ env.AZURE_FRONTEND_APP_NAME }} --resource-group WCS --settings SCM_COMMAND_IDLE_TIMEOUT=120
-          az webapp ssh --name ${{ env.AZURE_FRONTEND_APP_NAME }} --resource-group WCS --command "rm -rf /home/site/wwwroot/*"
+          curl -X DELETE "https://${{ env.AZURE_FRONTEND_APP_NAME }}.scm.azurewebsites.net/api/vfs/site/wwwroot/" \
+            -u ${{ secrets.AZURE_DEPLOY_USER }}:${{ secrets.AZURE_DEPLOY_PASSWORD }}
 
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
