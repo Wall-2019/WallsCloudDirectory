@@ -69,13 +69,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-          
-      - name: List current directory contents
-        run: ls -al
       
       - name: Set Azure Web App Name
         id: set-app-names
@@ -89,6 +82,19 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
+
+      - name: Clean up existing files on Azure Web App
+        run: |
+          az webapp deployment source config-zip --resource-group <YourResourceGroupName> --name ${{ env.AZURE_FRONTEND_APP_NAME }} --src /dev/null
+  
+
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+          
+      - name: List current directory contents
+        run: ls -al
 
       - name: Wait before deployment
         run: sleep 10s
