@@ -59,6 +59,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Clean up files on the server
+        run: |
+          curl -X POST https://${{ env.AZURE_FRONTEND_APP_NAME }}.scm.azurewebsites.net/api/command \
+          -u ${{ secrets.PROD_AZURE_DEPLOY_USER }}:${{ secrets.PROD_AZURE_DEPLOY_PASSWORD }} \
+          -d '{
+            "command": "rm -rf /home/site/wwwroot/*"
+          }'
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
@@ -78,7 +86,6 @@ jobs:
         run: |
           ls -al
           pwd
-  
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
