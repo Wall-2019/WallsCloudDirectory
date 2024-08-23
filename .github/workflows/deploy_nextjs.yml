@@ -71,7 +71,7 @@ jobs:
           echo "NEXT_PUBLIC_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
 
       - name: Set environment variables based on branch
-        run:
+        run: ls
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_AUTH_SECRET: ${{ env.NEXT_PUBLIC_NEXTAUTH_SECRET }}
