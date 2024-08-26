@@ -24,10 +24,16 @@ jobs:
         run: |
           if [[ $GITHUB_REF == 'refs/heads/production' ]]; then
             echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.PROD_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.PROD_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_AUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
             echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.STAGING_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_AUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_FRONTEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_URL=${{ secrets.DEV_NEXT_PUBLIC_URL }}" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_AUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
           fi
 
       - name: Install dependencies
@@ -40,6 +46,9 @@ jobs:
           rm -rf ./.next/cache
           zip release.zip .next public package.json package-lock.json next.config.mjs -qr
           unzip -l release.zip
+        env:
+          NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
+          NEXT_PUBLIC_AUTH_SECRET: ${{ env.NEXT_PUBLIC_AUTH_SECRET }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -69,18 +78,13 @@ jobs:
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
 
+      - name: Delay before deployment
+        run: sleep 10
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-
-      - name: Install dependencies
-        run: |
-          ls -al
-          pwd
-
-      - name: Delay before deployment
-        run: sleep 10
 
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
