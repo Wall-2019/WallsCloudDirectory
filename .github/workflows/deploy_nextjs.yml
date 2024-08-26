@@ -79,6 +79,9 @@ jobs:
           ls -al
           pwd
 
+      - name: Delay before deployment
+        run: sleep 10
+
       - name: Deploy Next.js to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
