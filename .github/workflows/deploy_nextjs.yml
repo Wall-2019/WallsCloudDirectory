@@ -38,7 +38,7 @@ jobs:
           npm run build
           npm prune --production
           rm -rf ./.next/cache
-          zip release.zip ./* .next -qr
+          zip release.zip .next public package.json package-lock.json next.config.mjs -qr
           unzip -l release.zip
 
       - name: Upload artifact for deployment job
