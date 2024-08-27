@@ -40,11 +40,11 @@ jobs:
         run: |
           cd app
           ls -al
-          npm install --force
+          npm install
           npm run build
           npm prune --production
           rm -rf ./.next/cache
-          zip release.zip .next public package.json package-lock.json next.config.mjs -qr
+          zip release.zip .next/standalone .next/standalone public -qr
           unzip -l release.zip
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
@@ -77,9 +77,6 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
             echo "AZURE_FRONTEND_APP_NAME=${{ secrets.DEV_AZURE_FRONTEND_APP_NAME }}" >> $GITHUB_ENV
           fi
-
-      - name: Delay before deployment
-        run: sleep 10
 
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
