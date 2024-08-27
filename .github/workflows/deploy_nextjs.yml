@@ -44,7 +44,7 @@ jobs:
           npm run build
           npm prune --production
           rm -rf ./.next/cache
-          zip release.zip .next/standalone public package.json package-lock.json next.config.mjs -qr
+          zip release.zip .next public package.json package-lock.json next.config.mjs -qr
           unzip -l release.zip
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
