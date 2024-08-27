@@ -48,12 +48,13 @@ jobs:
           cp -r ./public ./deploy
           cp -r ./.next/static/. ./deploy/.next/static
           zip release.zip ./deploy -qr
+          unzip -l release.zip
         env:
           NEXT_PUBLIC_URL: ${{ env.NEXT_PUBLIC_URL }}
           NEXT_PUBLIC_AUTH_SECRET: ${{ env.NEXT_PUBLIC_AUTH_SECRET }}
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: node-app
           path: app/release.zip
@@ -81,15 +82,18 @@ jobs:
           fi
 
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: node-app
 
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
       - name: Deploy Next.js to Azure Web App
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
-          package: release.zip 
+          package: ./deploy
           publish-profile: ${{ env.AZURE_FRONTEND_PUBLISH_PROFILE }}
 
       - name: Delete zip file
