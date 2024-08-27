@@ -93,7 +93,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_FRONTEND_APP_NAME }}
-          slot-name: 'Production'
           package: deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
   
