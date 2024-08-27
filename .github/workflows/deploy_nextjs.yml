@@ -49,6 +49,8 @@ jobs:
       - name: Prepare deployment artifacts
         run: |
           ls -al
+          cd app
+          ls -al
           rm -rf ./.next/cache
           mkdir -p deploy
           cp -r ./.next/standalone/. ./deploy
