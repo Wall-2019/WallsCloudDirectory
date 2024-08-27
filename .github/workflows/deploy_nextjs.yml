@@ -68,9 +68,16 @@ jobs:
           path: app/release.zip
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Download deployment artifacts
         uses: actions/download-artifact@v4
         with:
