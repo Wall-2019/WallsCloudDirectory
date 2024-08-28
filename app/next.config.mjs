@@ -11,7 +11,6 @@ const nextConfig = {
     },
     experimental: {
         optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@mantine/dates'],
-        outputStandalone: true,
     },
     output: 'standalone'
 };
