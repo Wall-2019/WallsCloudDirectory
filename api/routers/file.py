@@ -53,9 +53,7 @@ def convert_file_size(size_in_kb: int) -> str:
 # ユーザーの会社ストレージ名を取得する関数
 def get_user_storage_name(db: Session, user_id: int) -> str:
     storage_name_query = db.query(Company.storage_name)\
-        .join(Department, Department.company_id == Company.id)\
-        .join(User, User.department_id == Department.id)\
-        .filter(User.id == user_id)\
+        .filter(Company.id == user_id)\
         .first()
     
     if not storage_name_query:
@@ -319,7 +317,7 @@ async def upload_file(db: DbDependency,user: UserDependency, directory_id: int =
         raise HTTPException(status_code=400, detail="ファイルサイズが会社のストレージ容量を超えています")
 
     # ユーザーの会社ストレージ名の取得
-    storage_name = get_user_storage_name(db, user.user_id)
+    storage_name = get_user_storage_name(db, user.company_id)
 
     # アップロード対象のディレクトリパス取得
     directory_query = db.query(Directory)\

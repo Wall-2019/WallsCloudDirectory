@@ -3,7 +3,7 @@ from typing import Annotated, List
 from fastapi import Response, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
-from schemas.users import UserCreate,UserResponse, UserGetResponse, UserAdminGetResponse, UserSignup, UserUpdateResponse, UserUpdate, UserAdminUpdate, UserPasswordUpdate
+from schemas.users import UserCreate,UserResponse, UserGetResponse, UserAdminGetResponse, UserSignup, UserUpdateResponse, UserUpdate, UserAdminUpdate, UserPasswordUpdate,UserDelete
 from schemas.auth import Token
 from db import get_db
 from models import User, Department, Company, Department
@@ -187,6 +187,7 @@ async def get_all_user(db: DbDependency, user: UserDependency):
         raise HTTPException(status_code=403, detail="No authority")
     
     result = (db.query(User.id,
+                       User.personal_id,
                        User.company_id,
                        Company.company_name,
                        User.department_id,
@@ -337,13 +338,13 @@ async def update_password(db: DbDependency, user: UserDependency, user_password_
 
 # ユーザー削除機能
 @router.delete("/delete_user", status_code=status.HTTP_200_OK)
-async def delete_user(db: DbDependency, user: UserDependency, user_id: int):
+async def delete_user(db: DbDependency, user: UserDependency, delete_user: UserDelete):
     if not user.admin:
         raise HTTPException(status_code=403, detail="No authority")
 
     user_query = db.query(User)\
         .filter(
-            User.id == user_id,
+            User.id == delete_user.user_id,
             )\
         .first()
 
