@@ -5,9 +5,10 @@ import Link from "next/link";
 export function Welcome() {
 
   const test = () => {
-    console.log("Backend URL:", process.env.NEXT_PUBLIC_AUTH_SECRET);
+    const test = process.env.NEXT_PUBLIC_URL;
+    const test2 = process.env.CUSTOMCONNSTR_NEXT_PUBLIC_BACKEND;
     console.log("Backend URL:", process.env.NEXT_PUBLIC_URL);
-
+    console.log("Backend URL:", process.env.NEXT_PUBLIC_AUTH_SECRET);
   }
 
   return (
