@@ -6,7 +6,6 @@ export function Welcome() {
 
   const test = () => {
     console.log("Backend URL:", process.env.NEXT_PUBLIC_URL);
-    console.log("Backend URL:", process.env.NEXT_PUBLIC_AUTH_SECRET);
   }
 
   return (
@@ -30,7 +29,7 @@ export function Welcome() {
         Walls Cloud Directory はインターネットを通じてデータを
         保存・アクセス・共有を行うことができるプラットフォームです。
       </Text>
-      <Button onClick={test}>test</Button>
+      {/* <Button onClick={test}>test</Button> */}
     </>
   );
 }
