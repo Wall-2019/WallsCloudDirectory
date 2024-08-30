@@ -4,6 +4,7 @@ import { FaRegBuilding } from "react-icons/fa";
 import { AddCompany } from './AddCompany';
 import { AddUser } from './AddUser';
 import { UserLists } from './UserList';
+import { SystemInfo } from './SystemInfo';
 
 
 
@@ -25,6 +26,11 @@ export function Options() {
         <Tabs.Tab value="AddCompany" leftSection={<FaRegBuilding style={iconStyle} />}>
           会社追加
         </Tabs.Tab>
+
+        <Tabs.Tab value="SystemInfo" leftSection={<FaRegBuilding style={iconStyle} />}>
+          システム情報
+        </Tabs.Tab>
+
         {/* <Tabs.Tab value="settings" leftSection={<FiUser style={iconStyle} />}> */}
         {/* <Tabs.Tab value="Other" >
           Other
@@ -43,8 +49,8 @@ export function Options() {
         <AddUser />
       </Tabs.Panel>
 
-      <Tabs.Panel value="Other">
-        comming soon...
+      <Tabs.Panel value="SystemInfo">
+        <SystemInfo />
       </Tabs.Panel>
     </Tabs>    
     </>
