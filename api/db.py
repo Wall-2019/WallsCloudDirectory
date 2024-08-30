@@ -14,21 +14,25 @@ USER_NAME = os.getenv('user_name')
 PASSWORD = os.getenv('password')
 HOST = os.getenv('host')
 DATABASE_NAME = os.getenv('database_name')
+SQL = os.getenv('sql')
+USE_SSL = os.getenv('USE_SSL', 'false').lower() == 'true'
 
 # 接続URLの作成
-DATABASE_URL = f'mysql+pymysql://{USER_NAME}:{PASSWORD}@{HOST}/{DATABASE_NAME}?charset=utf8'
+DATABASE_URL = f'{SQL}://{USER_NAME}:{PASSWORD}@{HOST}/{DATABASE_NAME}?charset=utf8'
 
 # SSLオプションの追加
-ssl_args = {
-    "ssl": {
-        "ca": "/etc/ssl/certs/ca-certificates.crt"
+ssl_args = {}
+if USE_SSL:
+    ssl_args = {
+        "ssl": {
+            "ca": "/etc/ssl/certs/ca-certificates.crt"
+        }
     }
-}
 
 # DBとの接続
 ENGINE = create_engine(
     DATABASE_URL,
-    connect_args=ssl_args,
+    connect_args=ssl_args if USE_SSL else {},
     encoding="utf-8",
     echo=True
 )
