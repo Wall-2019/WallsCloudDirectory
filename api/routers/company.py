@@ -158,7 +158,7 @@ async def create(db: DbDependency, user: UserDependency, user_create: CompanyCre
     new_directory = Directory(
         company_id = new_company.id,
         directory_class = 0,
-        open_flg = True,
+        open_flg = False,
         delete_flg = False,
         create_at = datetime.now(pytz.timezone('Asia/Tokyo')),
         create_acc = user.user_id,

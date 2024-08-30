@@ -9,9 +9,7 @@ git config --global alias.st status
 
 # Docker setup
 Create and Running
-```
 $ docker-compose up -d --build
-```
 
 ## Document of API
 http://localhost:8000/docs

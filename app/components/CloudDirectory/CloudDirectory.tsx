@@ -59,7 +59,7 @@ interface SelectedFile {
   file_name: string;
 }
 export function CloudDirectory() {
-  const { setFileList, FileList, setSelectedDirectory, SelectedDirectory, favoriteState, setFavoriteState,setRefreshState } = useGlobalContext();
+  const { setFileList, FileList, setSelectedDirectory, SelectedDirectory, favoriteState, setFavoriteState,setRefreshState, RootDirectoryID } = useGlobalContext();
   const { data: session, status } = useSession();
   const [count, { increment, decrement }] = useCounter(3, { min: 0 });
   const router = useRouter();
@@ -131,17 +131,22 @@ export function CloudDirectory() {
   // フォルダ追加ボタン押下後の処理
   const handleAddDirectory = async () => {
     console.log(SelectedDirectory)
-    console.log(value)
-    console.log(backendUrl)
+    console.log(RootDirectoryID)
+
+    let data = {}
     if (!SelectedDirectory) {
-      console.log('ディレクトリが選択されていないため処理終了');
-      return;
+      data =  {            
+        "directory_id": RootDirectoryID,
+        "directory_name": value,
+        "open_flg": false
+        }
+    }else{
+      data =  {            
+        "directory_id": SelectedDirectory.directory_id,
+        "directory_name": value,
+        "open_flg": false
+        }
     }
-    const data =  {            
-      "directory_id": SelectedDirectory.directory_id,
-      "directory_name": value,
-      "open_flg": false
-      }
 
     const add_directory = axios.post(backendUrl + '/directory/add_directory',data,config)
     .then((res) => {

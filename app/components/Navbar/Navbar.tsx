@@ -109,6 +109,7 @@ export function Navbar() {
 
     // ファイル一覧を取得する。
     const getFileList = (directory_id: number) => {
+      console.log(directory_id)
       axios.post(backendUrl + '/file/get_all_file', { directory_id }, config)
       .then((res) => {
           console.log(res.data);
@@ -120,6 +121,8 @@ export function Navbar() {
       })
       .catch((err) => {
           console.log('err:', err);
+          console.log('ファイルなし')
+
       });
     };
 
