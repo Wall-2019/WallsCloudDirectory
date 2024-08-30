@@ -5,7 +5,7 @@ on:
     branches:
       - production
       - staging
-      - development
+      - develop
   workflow_dispatch:
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.STAGING_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
             echo "AZURE_BACKEND_PUBLISH_PROFILE=${{ secrets.DEV_AZURE_BACKEND_PUBLISH_PROFILE }}" >> $GITHUB_ENV
           fi
@@ -67,7 +67,7 @@ jobs:
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.PROD_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.STAGING_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
             echo "AZURE_BACKEND_APP_NAME=${{ secrets.DEV_AZURE_BACKEND_APP_NAME }}" >> $GITHUB_ENV
           fi
   
