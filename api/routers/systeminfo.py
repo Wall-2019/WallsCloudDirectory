@@ -7,7 +7,7 @@ UserDependency = Annotated[DecodedToken, Depends(get_current_user)]
 router = APIRouter(prefix="/systeminfo", tags=["systeminfo"])
 
 # システム情報  取得
-@router.post('/get_systeminfo', status_code=status.HTTP_200_OK)
+@router.get('/get_systeminfo', status_code=status.HTTP_200_OK)
 async def get_systeminfo(user: UserDependency):
 
     # 権限チェック
