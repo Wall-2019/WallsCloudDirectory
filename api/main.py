@@ -1,9 +1,10 @@
+from os import system
 import time
 from fastapi import FastAPI, Request
 from fastapi.responses  import JSONResponse
 from starlette.middleware.cors import CORSMiddleware  # CORSを回避するために必要
 # from api.models import Assignment
-from routers import auth, directory,company,file,favorite,assignment,permission,user,department,region,industry
+from routers import auth, directory,company,file,favorite,assignment,permission,user,department,region,industry,systeminfo
 from fastapi.security import HTTPBearer
 from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
@@ -52,6 +53,7 @@ app.include_router(department.router)
 # app.include_router(permission.router)
 app.include_router(region.router)
 app.include_router(industry.router)
+app.include_router(systeminfo.router)
 
 
 
