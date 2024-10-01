@@ -54,7 +54,7 @@ export function SystemInfo() {
       
       <Paper withBorder shadow="md" p={10} mt={10} radius="md">            
             <p>システムバージョン</p>
-            <p>　-フロントエンド:ver.1.0</p>
+            <p>　-フロントエンド:ver.1.1</p>
             <p>　-バックエンド:{backendVer}</p>
             <p>　-データベース:{databaseVer}</p>
             <p>バックエンドURL:{backendUrl}</p>
