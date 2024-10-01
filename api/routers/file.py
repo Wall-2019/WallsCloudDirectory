@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException, status, UploadFile, File 
 from fastapi.responses import FileResponse
 from typing import List, Annotated, Union
 from models import Directory, User, File, FileType, Company, Department
-from schemas.files import FileGet, FileGetResponse, FileUploadData, FileUploadResponse, FileRenameResponse, FileRename, FileDelete, FileDownload, FileDeleteResponse
+from schemas.files import FileGet, FileGetResponse, FileUploadData, FileUploadResponse, FileRenameResponse, FileRename, FileDelete, FileDownload, FileDeleteResponse,FileDecode
 from schemas.directories import DirectoryGetResponse
 from db import get_db
 from sqlalchemy.orm import Session
@@ -16,6 +16,9 @@ from fastapi import BackgroundTasks
 import shutil
 import pytz
 import os
+from auth import create_file_token,decode_jwt
+from datetime import timedelta
+
 
 DbDependency = Annotated[Session, Depends(get_db)]
 UserDependency = Annotated[DecodedToken, Depends(get_current_user)]
@@ -594,3 +597,103 @@ async def get_storage(db: DbDependency, user: UserDependency):
                     icon_id=None
                 )
             )
+# ダウンロードURLの取得
+@router.post("/get_filetoken", status_code=status.HTTP_200_OK)
+async def download_file(db: DbDependency, user: UserDependency, file_download: FileDownload):
+    # ファイル情報の取得
+    file_query = (
+        db.query(
+            File.id,
+            File.file_name,
+            File.file_size,
+            File.filetype_id,
+            File.file_update_at,
+            Directory.directory_name,
+            Directory.directory_class,
+            Directory.path
+        )
+        .select_from(File)
+        .outerjoin(Directory, File.directory_id == Directory.id)
+        .filter(
+            Directory.company_id == user.company_id,
+            File.id == file_download.file_id,
+            File.delete_flg == False
+        )
+        .first()
+    )
+
+    if file_query is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # ユーザーの会社ストレージ名の取得
+    storage_name = get_user_storage_name(db, user.company_id)
+
+    # ファイルのパスを取得
+    if file_query.directory_class == 0:
+        directory_path = ''
+    else:
+        if file_query.path is None:
+            directory_path = file_query.directory_name + '/'
+        else:
+            directory_path = file_query.path + file_query.directory_name + '/'
+    token = create_file_token(
+        storage_name,directory_path,file_query.file_name,file_query.id
+        # db, storage_name,directory_path,file_query.file_name, timedelta(days=30)        
+        )
+    return {'filetoken':token}
+
+# tdecode token
+@router.post("/url_decode", status_code=status.HTTP_200_OK)
+async def download_file(db: DbDependency, token: FileDecode):
+
+    decode = decode_jwt(token.token)
+
+    # ファイル情報の取得
+    query = db.query(File.id,
+                     File.file_name,
+                     File.file_size,
+                     FileType.extension_name,
+                     File.file_update_at)\
+            .select_from(File)\
+            .outerjoin(FileType,File.filetype_id == FileType.id)\
+            .filter(File.id == decode['id'], File.delete_flg == False)\
+            .first()
+    
+    if query is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    file_extension = query['extension_name']
+    if file_extension is None:
+            file_extension = os.path.splitext(query['file_name'])[1].lstrip('.') + 'ファイル'
+    formatted_date = query['file_update_at'].strftime('%Y-%m-%d %H:%M:%S')
+
+    return {'id': query['id'],
+            'file_name': query['file_name'],
+            'file_size': convert_file_size(query['file_size']),
+            'extension_name': file_extension,
+            'file_update_at': formatted_date
+            }
+
+# トークンを使用したファイルのダウンロード
+@router.post("/download_file_token", status_code=status.HTTP_200_OK)
+async def download_file(token: FileDecode,background_tasks: BackgroundTasks):
+
+    decode = decode_jwt(token.token)
+    file_chunks = download_file_from_azure_to_stream(decode['storage_name'], decode['path'], decode['filename'])
+
+    # ファイル名をRFC 5987形式でエンコード
+    encoded_file_name = quote(decode['filename'])
+    print(encoded_file_name)
+
+    # encoded_file_nameからMINEタイプを取得
+    mime_type = mimetypes.guess_type(encoded_file_name)[0]
+    if mime_type is None:
+        mime_type = 'application/octet-stream'
+
+    # バックグラウンドタスクとして一時ファイルを削除する
+    background_tasks.add_task(remove_file, file_chunks)
+
+    # フロントへファイルを渡す
+    response = FileResponse(file_chunks, media_type='application/octet-stream', headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_file_name}"})
+    
+    return response

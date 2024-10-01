@@ -6,11 +6,13 @@ import classes from './CloudDirectory.module.css';
 import { BsCloudDownload } from 'react-icons/bs';
 import axios from 'axios';
 import { useAuthConfig,useAxiosConfigDownloadFile } from '../../app/providers/useAuthConfig';
+import { TbUserShare } from "react-icons/tb";
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineEllipsis } from 'react-icons/ai';
 import { MdDeleteOutline } from 'react-icons/md';
 // import axios,{ ResponseType } from 'axios';
 import { saveAs } from 'file-saver';
+import { showNotification } from '@mantine/notifications';
 
 interface SelectedFile {
   id: number | null;
@@ -131,7 +133,48 @@ export function FileLists() {
           console.log("err:", err);
         });
       }
+  // ファイルダウンロード用リンクの作成
+  const downloadLink = (id:number) => {
+    // console.log(id)
+    // console.log(downloadConfig)
+    const refresh = axios.post(backendUrl + '/file/get_filetoken',
+      {"file_id": id}, 
+      config)
+    .then((res) => {
+      // console.log(res)
+      // console.log(res.data)
+      handleCopy(res.data)
+    })
+    .catch(err => {
+      console.log("err:", err);
+    });
+  }
+  // クリップボードコピー処理
+  const handleCopy = async (param: any) => {
+    try {
+      const Url = process.env.NEXT_PUBLIC_FR_URL;
+      console.log(param)
+      console.log(param.filetoken)
+      console.log(Url + '/download/' + param.filetoken)
+      
+      // paramをクリップボードにコピー
+      await navigator.clipboard.writeText(Url + '/download/' + param.filetoken);
 
+      // コピー成功通知
+      showNotification({
+        title: 'コピー成功',
+        message: 'パラメータがクリップボードにコピーされました！',
+        color: 'green',
+      });
+    } catch (error) {
+      // コピー失敗通知
+      showNotification({
+        title: 'コピー失敗',
+        message: 'クリップボードへのコピーに失敗しました。',
+        color: 'red',
+      });
+    }
+  };
   return (
     FileList && FileList.length > 0 ? FileList.map((element: FileListType) => {
       const keyPrefix = element.icon_id === 99 ? 'directory-' : 'file-';
@@ -163,11 +206,19 @@ export function FileLists() {
                   編集
                 </Menu.Item>
                 {element.icon_id !== 99 && (
+                  <>
                   <Menu.Item 
                   onClick={() => downloadFile(element.id)} 
                   leftSection={<BsCloudDownload size={17} />}>
                     ダウンロード
                   </Menu.Item>
+
+                  <Menu.Item 
+                  onClick={() => downloadLink(element.id)} 
+                  leftSection={<TbUserShare size={17} />}>
+                    共有
+                  </Menu.Item>
+                  </>
                 )}
                 <Menu.Item color="red" onClick={() => deleteFile(element.id,element.icon_id)} leftSection={<MdDeleteOutline size={21} />}>
                   ファイル削除

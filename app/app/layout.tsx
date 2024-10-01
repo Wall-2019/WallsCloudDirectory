@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from"../components/Header"
 import NextAuthProvider from './providers/NextAuth'
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import '@mantine/core/styles.css';
 import { theme } from './theme';
 
@@ -30,7 +31,8 @@ export default function RootLayout(
       <body className={notoSansJP.className}>
       <NextAuthProvider>
       <MantineProvider theme={theme}>
-        <Header />{children}
+          <Notifications />
+          <Header />{children}
       </MantineProvider>
         </NextAuthProvider>
       </body>

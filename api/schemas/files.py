@@ -44,3 +44,6 @@ class FileDelete(BaseModel):
 
 class FileGetStorage(BaseModel):
     company_id: int = Field(gt=0, examples=[1])
+
+class FileDecode(BaseModel):
+    token: str = Field(min_length=1, examples=["file token"])

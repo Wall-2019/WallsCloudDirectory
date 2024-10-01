@@ -5,6 +5,8 @@ import axios from 'axios';
 
 export function SystemInfo() {
   const backendUrl = process.env.NEXT_PUBLIC_URL as string;
+  const frontendUrl = process.env.NEXT_PUBLIC_FR_URL as string;
+  
   const { data: session, status } = useSession();
   const [backendVer, setBackendVer] = useState('')
   const [databaseVer, setDatabaseVer] = useState('')
@@ -52,10 +54,11 @@ export function SystemInfo() {
       
       <Paper withBorder shadow="md" p={10} mt={10} radius="md">            
             <p>システムバージョン</p>
-            <p>　-フロントエンド:ver.1.0</p>
+            <p>　-フロントエンド:ver.1.1</p>
             <p>　-バックエンド:{backendVer}</p>
             <p>　-データベース:{databaseVer}</p>
             <p>バックエンドURL:{backendUrl}</p>
+            <p>フロントエンドURL:{frontendUrl}</p>            
             <p>システム時間:{hour}時{min}分{sec}秒</p>
       </Paper>
     </Container>

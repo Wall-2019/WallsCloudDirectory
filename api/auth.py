@@ -114,3 +114,12 @@ def verify_csrf_update_jwt(db: Session, request, csrf_protect):
     subject = verify_jwt(request)
     new_token = encode_jwt(db,subject)
     return new_token
+
+# ファイルパス暗号化
+def create_file_token(storage_name: str, path: str, filename: str, id: int):
+    payload = {"id": id,
+               "storage_name": storage_name, 
+               "path": path, 
+               "filename": filename}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
